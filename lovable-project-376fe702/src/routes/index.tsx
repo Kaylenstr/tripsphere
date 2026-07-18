@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bell, Search, Heart, MessageCircle, Share, Bookmark, Plus } from "lucide-react";
+import { useState } from "react";
+import { Bell, Search, Heart, MessageCircle, Share, Bookmark, Plus, Send } from "lucide-react";
 import { Avatar } from "../components/Avatar";
 import { ThemeToggle } from "../components/ThemeToggle";
 import feedAlps from "../assets/feed-alps.jpg";
@@ -22,6 +23,7 @@ type FeedPost = {
   caption: string;
   liked?: boolean;
   saved?: boolean;
+  thread?: { author: string; text: string }[];
 };
 
 const stories = [
@@ -47,6 +49,10 @@ const feed: FeedPost[] = [
     caption:
       "Just reached the summit of Aiguille du Midi. The air is thin but the view is everything.",
     liked: true,
+    thread: [
+      { author: "Mira Okafor", text: "Unreal. The ridge looks brutal." },
+      { author: "Theo Lindqvist", text: "GPX when?" },
+    ],
   },
   {
     id: "2",
@@ -60,6 +66,7 @@ const feed: FeedPost[] = [
     caption:
       "Found a quiet spot by the water. No service, just the sound of the ocean. #offline",
     saved: true,
+    thread: [{ author: "Aiko Mori", text: "This is the one. Saving for later." }],
   },
   {
     id: "3",
@@ -72,6 +79,7 @@ const feed: FeedPost[] = [
     comments: 22,
     caption:
       "Golden hour hit the harbour just right. Twelve days around the ring road start tomorrow.",
+    thread: [{ author: "Elena Vance", text: "Jealous. Drive safe out there." }],
   },
   {
     id: "4",
@@ -85,6 +93,7 @@ const feed: FeedPost[] = [
     caption:
       "Sunrise from the ridge. Worth every frozen finger. GPX track coming once I'm back in range.",
     liked: true,
+    thread: [],
   },
 ];
 
@@ -101,12 +110,13 @@ function Home() {
         </div>
         <div className="flex gap-3">
           <ThemeToggle />
-          <button
-            aria-label="Search friends"
+          <Link
+            to="/search"
+            aria-label="Search friends and places"
             className="grid size-10 place-items-center rounded-full border border-primary/5 bg-card text-primary/70 shadow-sm transition-transform active:scale-95"
           >
             <Search className="size-5" />
-          </button>
+          </Link>
           <button
             aria-label="Notifications"
             className="relative grid size-10 place-items-center rounded-full border border-primary/5 bg-card text-primary/70 shadow-sm transition-transform active:scale-95"
@@ -154,7 +164,6 @@ function Home() {
         {feed.map((post) => (
           <FeedCard key={post.id} post={post} />
         ))}
-
         {/* Your Log preview — link to profile for personal stats */}
         <section className="border-t border-primary/5 py-8">
           <div className="mb-6 flex items-end justify-between">
@@ -200,6 +209,17 @@ function Home() {
 }
 
 function FeedCard({ post }: { post: FeedPost }) {
+  const [comments, setComments] = useState(post.thread ?? []);
+  const [draft, setDraft] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const submit = () => {
+    const text = draft.trim();
+    if (!text) return;
+    setComments((prev) => [...prev, { author: "You", text }]);
+    setDraft("");
+  };
+
   return (
     <article className="overflow-hidden rounded-[22px] border border-primary/5 bg-card shadow-sm">
       <div className="flex items-center gap-3 p-4">
@@ -232,9 +252,15 @@ function FeedCard({ post }: { post: FeedPost }) {
               />
               {post.likes}
             </button>
-            <button className="flex items-center gap-1.5 text-sm font-medium text-primary/80 transition-colors hover:text-accent active:scale-90">
+            <button
+              onClick={() => setOpen((v) => !v)}
+              className={`flex items-center gap-1.5 text-sm font-medium transition-colors active:scale-90 ${
+                open ? "text-accent" : "text-primary/80 hover:text-accent"
+              }`}
+              aria-expanded={open}
+            >
               <MessageCircle className="size-4" />
-              {post.comments}
+              {post.comments + comments.length - (post.thread?.length ?? 0)}
             </button>
             <button className="flex items-center gap-1.5 text-sm font-medium text-primary/80 transition-colors hover:text-accent active:scale-90">
               <Share className="size-4" />
@@ -249,6 +275,46 @@ function FeedCard({ post }: { post: FeedPost }) {
         <p className="text-sm leading-relaxed">
           <span className="font-bold">{post.author}</span> {post.caption}
         </p>
+
+        {open && (
+          <div className="mt-4 border-t border-primary/5 pt-4">
+            {comments.length > 0 ? (
+              <ul className="mb-3 space-y-2.5">
+                {comments.map((c, i) => (
+                  <li key={i} className="flex gap-2.5 text-sm">
+                    <Avatar name={c.author} size={28} className="mt-0.5" />
+                    <div className="min-w-0 flex-1">
+                      <span className="font-bold">{c.author}</span>{" "}
+                      <span className="text-primary/80">{c.text}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mb-3 text-xs text-primary/40">
+                Be the first to comment.
+              </p>
+            )}
+            <div className="flex items-center gap-2 rounded-2xl bg-secondary/60 px-3 py-2">
+              <Avatar name="Sam Rivera" size={28} />
+              <input
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && submit()}
+                placeholder="Add a comment…"
+                className="flex-1 bg-transparent text-sm outline-none placeholder:text-primary/30"
+              />
+              <button
+                onClick={submit}
+                disabled={!draft.trim()}
+                aria-label="Send comment"
+                className="grid size-8 place-items-center rounded-full bg-accent text-primary transition-transform enabled:active:scale-90 disabled:opacity-40"
+              >
+                <Send className="size-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </article>
   );

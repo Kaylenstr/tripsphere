@@ -23,7 +23,7 @@ function Profile() {
     <div className="pb-40">
       <header className="flex items-center justify-between px-6 pt-6">
         <Link
-          to="/profile"
+          to="/friends"
           className="grid size-10 place-items-center rounded-full border border-primary/5 bg-card"
           aria-label="Friends"
         >
@@ -35,7 +35,7 @@ function Profile() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Link
-            to="/profile"
+            to="/settings"
             className="grid size-10 place-items-center rounded-full border border-primary/5 bg-card"
             aria-label="Settings"
           >

@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddRouteImport } from './routes/add'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as TripTripIdRouteImport } from './routes/trip.$tripId'
 
@@ -31,9 +34,24 @@ const ExploreRoute = ExploreRouteImport.update({
   path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FriendsRoute = FriendsRouteImport.update({
+  id: '/friends',
+  path: '/friends',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TripsRoute = TripsRouteImport.update({
@@ -51,7 +69,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/explore': typeof ExploreRoute
+  '/friends': typeof FriendsRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/trips': typeof TripsRoute
   '/trip/$tripId': typeof TripTripIdRoute
 }
@@ -59,7 +80,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/explore': typeof ExploreRoute
+  '/friends': typeof FriendsRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/trips': typeof TripsRoute
   '/trip/$tripId': typeof TripTripIdRoute
 }
@@ -68,21 +92,45 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/explore': typeof ExploreRoute
+  '/friends': typeof FriendsRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/trips': typeof TripsRoute
   '/trip/$tripId': typeof TripTripIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/add' | '/explore' | '/profile' | '/trips' | '/trip/$tripId'
+  fullPaths:
+    | '/'
+    | '/add'
+    | '/explore'
+    | '/friends'
+    | '/profile'
+    | '/search'
+    | '/settings'
+    | '/trips'
+    | '/trip/$tripId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add' | '/explore' | '/profile' | '/trips' | '/trip/$tripId'
+  to:
+    | '/'
+    | '/add'
+    | '/explore'
+    | '/friends'
+    | '/profile'
+    | '/search'
+    | '/settings'
+    | '/trips'
+    | '/trip/$tripId'
   id:
     | '__root__'
     | '/'
     | '/add'
     | '/explore'
+    | '/friends'
     | '/profile'
+    | '/search'
+    | '/settings'
     | '/trips'
     | '/trip/$tripId'
   fileRoutesById: FileRoutesById
@@ -91,7 +139,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddRoute: typeof AddRoute
   ExploreRoute: typeof ExploreRoute
+  FriendsRoute: typeof FriendsRoute
   ProfileRoute: typeof ProfileRoute
+  SearchRoute: typeof SearchRoute
+  SettingsRoute: typeof SettingsRoute
   TripsRoute: typeof TripsRoute
   TripTripIdRoute: typeof TripTripIdRoute
 }
@@ -119,11 +170,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/friends': {
+      id: '/friends'
+      path: '/friends'
+      fullPath: '/friends'
+      preLoaderRoute: typeof FriendsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trips': {
@@ -147,7 +219,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddRoute: AddRoute,
   ExploreRoute: ExploreRoute,
+  FriendsRoute: FriendsRoute,
   ProfileRoute: ProfileRoute,
+  SearchRoute: SearchRoute,
+  SettingsRoute: SettingsRoute,
   TripsRoute: TripsRoute,
   TripTripIdRoute: TripTripIdRoute,
 }
