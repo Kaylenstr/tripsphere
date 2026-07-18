@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bell, Search, Heart, MessageCircle } from "lucide-react";
+import { Bell, Search, Heart, MessageCircle, Share, Bookmark, Plus } from "lucide-react";
 import { Avatar } from "../components/Avatar";
 import { ThemeToggle } from "../components/ThemeToggle";
 import feedAlps from "../assets/feed-alps.jpg";
 import feedLofoten from "../assets/feed-lofoten.jpg";
+import tripIceland from "../assets/trip-iceland.jpg";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -19,7 +20,19 @@ type FeedPost = {
   likes: number;
   comments: number;
   caption: string;
+  liked?: boolean;
+  saved?: boolean;
 };
+
+const stories = [
+  { id: "s1", name: "You", isSelf: true },
+  { id: "s2", name: "Elena Vance" },
+  { id: "s3", name: "Julian Thorne" },
+  { id: "s4", name: "Mira Okafor" },
+  { id: "s5", name: "Theo Lindqvist" },
+  { id: "s6", name: "Aiko Mori" },
+  { id: "s7", name: "Noah Costa" },
+];
 
 const feed: FeedPost[] = [
   {
@@ -33,6 +46,7 @@ const feed: FeedPost[] = [
     comments: 14,
     caption:
       "Just reached the summit of Aiguille du Midi. The air is thin but the view is everything.",
+    liked: true,
   },
   {
     id: "2",
@@ -45,6 +59,32 @@ const feed: FeedPost[] = [
     comments: 3,
     caption:
       "Found a quiet spot by the water. No service, just the sound of the ocean. #offline",
+    saved: true,
+  },
+  {
+    id: "3",
+    author: "Mira Okafor",
+    place: "Reykjavík, Iceland",
+    timeAgo: "1d ago",
+    image: tripIceland,
+    aspect: "aspect-[4/5]",
+    likes: 243,
+    comments: 22,
+    caption:
+      "Golden hour hit the harbour just right. Twelve days around the ring road start tomorrow.",
+  },
+  {
+    id: "4",
+    author: "Theo Lindqvist",
+    place: "Swiss Alps",
+    timeAgo: "2d ago",
+    image: feedAlps,
+    aspect: "aspect-[4/3]",
+    likes: 312,
+    comments: 41,
+    caption:
+      "Sunrise from the ridge. Worth every frozen finger. GPX track coming once I'm back in range.",
+    liked: true,
   },
 ];
 
@@ -63,56 +103,56 @@ function Home() {
           <ThemeToggle />
           <button
             aria-label="Search friends"
-            className="grid size-10 place-items-center rounded-full border border-primary/5 bg-card text-primary/70 shadow-sm"
+            className="grid size-10 place-items-center rounded-full border border-primary/5 bg-card text-primary/70 shadow-sm transition-transform active:scale-95"
           >
             <Search className="size-5" />
           </button>
           <button
             aria-label="Notifications"
-            className="grid size-10 place-items-center rounded-full border border-primary/5 bg-card text-primary/70 shadow-sm"
+            className="relative grid size-10 place-items-center rounded-full border border-primary/5 bg-card text-primary/70 shadow-sm transition-transform active:scale-95"
           >
             <Bell className="size-5" />
+            <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-accent" />
           </button>
         </div>
       </header>
 
-      <main className="mt-2 space-y-6 px-4">
-        {feed.map((post) => (
-          <article
-            key={post.id}
-            className="overflow-hidden rounded-[22px] border border-primary/5 bg-card shadow-sm"
+      {/* Stories row */}
+      <section
+        aria-label="Friends' recent trips"
+        className="scrollbar-hide flex gap-4 overflow-x-auto px-6 py-4"
+      >
+        {stories.map((s) => (
+          <button
+            key={s.id}
+            className="flex shrink-0 flex-col items-center gap-1.5 transition-transform active:scale-95"
           >
-            <div className="flex items-center gap-3 p-4">
-              <Avatar name={post.author} size={40} />
-              <div className="min-w-0">
-                <h3 className="truncate text-sm font-semibold">{post.author}</h3>
-                <p className="truncate text-[11px] uppercase tracking-wider text-primary/50">
-                  {post.place} · {post.timeAgo}
-                </p>
+            <div
+              className={`grid size-16 place-items-center rounded-full p-[2px] ${
+                s.isSelf
+                  ? "bg-primary/10"
+                  : "bg-gradient-to-br from-accent to-accent/40"
+              }`}
+            >
+              <div className="relative grid size-full place-items-center rounded-full bg-canvas">
+                <Avatar name={s.name} size={52} />
+                {s.isSelf && (
+                  <span className="absolute -bottom-0.5 -right-0.5 grid size-5 place-items-center rounded-full border-2 border-canvas bg-primary text-primary-foreground">
+                    <Plus className="size-3" strokeWidth={3} />
+                  </span>
+                )}
               </div>
             </div>
-            <img
-              src={post.image}
-              alt={`${post.place} by ${post.author}`}
-              loading="lazy"
-              className={`w-full ${post.aspect} object-cover`}
-            />
-            <div className="p-5">
-              <div className="mb-3 flex gap-5">
-                <button className="flex items-center gap-1.5 text-sm font-medium text-primary/80 transition-colors hover:text-accent">
-                  <Heart className="size-4" />
-                  {post.likes}
-                </button>
-                <button className="flex items-center gap-1.5 text-sm font-medium text-primary/80 transition-colors hover:text-accent">
-                  <MessageCircle className="size-4" />
-                  {post.comments}
-                </button>
-              </div>
-              <p className="text-sm leading-relaxed">
-                <span className="font-bold">{post.author}</span> {post.caption}
-              </p>
-            </div>
-          </article>
+            <span className="max-w-[64px] truncate text-[11px] font-semibold text-primary/70">
+              {s.isSelf ? "Your log" : s.name.split(" ")[0]}
+            </span>
+          </button>
+        ))}
+      </section>
+
+      <main className="mt-1 space-y-6 px-4">
+        {feed.map((post) => (
+          <FeedCard key={post.id} post={post} />
         ))}
 
         {/* Your Log preview — link to profile for personal stats */}
@@ -130,7 +170,7 @@ function Home() {
           <div className="grid grid-cols-2 gap-4">
             <Link
               to="/profile"
-              className="flex h-40 flex-col justify-between rounded-[30px] bg-ink p-6 text-ink-foreground"
+              className="flex h-40 flex-col justify-between rounded-[30px] bg-ink p-6 text-ink-foreground transition-transform active:scale-[0.98]"
             >
               <span className="text-[11px] uppercase tracking-widest text-ink-foreground/50">
                 Round-trip dist.
@@ -142,7 +182,7 @@ function Home() {
             </Link>
             <Link
               to="/trips"
-              className="flex h-40 flex-col justify-between rounded-[30px] border border-primary/5 bg-card p-6"
+              className="flex h-40 flex-col justify-between rounded-[30px] border border-primary/5 bg-card p-6 transition-transform active:scale-[0.98]"
             >
               <span className="text-[11px] uppercase tracking-widest text-primary/40">
                 Trips logged
@@ -156,5 +196,60 @@ function Home() {
         </section>
       </main>
     </div>
+  );
+}
+
+function FeedCard({ post }: { post: FeedPost }) {
+  return (
+    <article className="overflow-hidden rounded-[22px] border border-primary/5 bg-card shadow-sm">
+      <div className="flex items-center gap-3 p-4">
+        <Avatar name={post.author} size={40} />
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-sm font-semibold">{post.author}</h3>
+          <p className="truncate text-[11px] uppercase tracking-wider text-primary/50">
+            {post.place} · {post.timeAgo}
+          </p>
+        </div>
+        <button
+          aria-label="More"
+          className="grid size-8 place-items-center rounded-full text-primary/40 transition-colors hover:text-primary"
+        >
+          <span className="text-lg leading-none">···</span>
+        </button>
+      </div>
+      <img
+        src={post.image}
+        alt={`${post.place} by ${post.author}`}
+        loading="lazy"
+        className={`w-full ${post.aspect} object-cover`}
+      />
+      <div className="p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex gap-5">
+            <button className="flex items-center gap-1.5 text-sm font-medium text-primary/80 transition-colors hover:text-accent active:scale-90">
+              <Heart
+                className={`size-4 ${post.liked ? "fill-accent text-accent" : ""}`}
+              />
+              {post.likes}
+            </button>
+            <button className="flex items-center gap-1.5 text-sm font-medium text-primary/80 transition-colors hover:text-accent active:scale-90">
+              <MessageCircle className="size-4" />
+              {post.comments}
+            </button>
+            <button className="flex items-center gap-1.5 text-sm font-medium text-primary/80 transition-colors hover:text-accent active:scale-90">
+              <Share className="size-4" />
+            </button>
+          </div>
+          <button className="text-primary/60 transition-colors hover:text-accent active:scale-90">
+            <Bookmark
+              className={`size-4 ${post.saved ? "fill-primary text-primary" : ""}`}
+            />
+          </button>
+        </div>
+        <p className="text-sm leading-relaxed">
+          <span className="font-bold">{post.author}</span> {post.caption}
+        </p>
+      </div>
+    </article>
   );
 }
